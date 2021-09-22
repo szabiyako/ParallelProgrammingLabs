@@ -1,11 +1,15 @@
-#include "solveCuda.cuh"
+#include "solveCudaGlobalMemory.cuh"
 
 #include <stdio.h>
 #include <chrono>
 
-void Solve::cuda(int *res, const int *matrix, const int sideSize)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                 SOLVER                                                           //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Solve::cudaGlobalMemory(int *res, const int *matrix, const int sideSize)
 {
-	cudaError_t cudaStatus = Solve::Internal::cuda(res, matrix, sideSize);
+	cudaError_t cudaStatus = Solve::Internal::cudaGlobalMemory(res, matrix, sideSize);
 	if (cudaStatus != cudaSuccess) {
 		fprintf(stderr, "Solve::cuda failed!\n");
 		fflush(stdout);
@@ -13,9 +17,9 @@ void Solve::cuda(int *res, const int *matrix, const int sideSize)
 	}
 }
 
-void Solve::testCuda(int* res, const int* matrix, const int sideSize)
+void Solve::testCudaGlobalMemory(int* res, const int* matrix, const int sideSize)
 {
-    cudaError_t cudaStatus = Solve::Internal::testCuda(res, matrix, sideSize);
+    cudaError_t cudaStatus = Solve::Internal::testCudaGlobalMemory(res, matrix, sideSize);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "Solve::cuda failed!\n");
         fflush(stdout);
@@ -23,6 +27,9 @@ void Solve::testCuda(int* res, const int* matrix, const int sideSize)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                               INTERNAL                                                           //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void Solve::Internal::compute(int* res, const int* arr, const int size)
 {
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -35,7 +42,11 @@ __global__ void Solve::Internal::compute(int* res, const int* arr, const int siz
     }
 }
 
-cudaError_t Solve::Internal::cuda(int* res, const int* arr, const int size)
+
+///////////////////////////////
+//       BASE FUNCTION       //
+///////////////////////////////
+cudaError_t Solve::Internal::cudaGlobalMemory(int* res, const int* arr, const int size)
 {
     int* dev_arr = 0;
     int* dev_res = 0;
@@ -80,7 +91,7 @@ cudaError_t Solve::Internal::cuda(int* res, const int* arr, const int size)
         resBlockSize = size;
 
     
-    // Launch a kernel on the GPU with one thread for each element.
+    // Launch a kernel on the GPU with one thread for each column.
     compute<<<num_blocks, resBlockSize >>> (dev_res, dev_arr, resBlockSize);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
@@ -97,7 +108,7 @@ cudaError_t Solve::Internal::cuda(int* res, const int* arr, const int size)
     }
 
     
-    // Copy output vector from GPU buffer to host memory.
+    // Copy output array from GPU buffer to host memory.
     cudaStatus = cudaMemcpy(res, dev_res, size * sizeof(int), cudaMemcpyDeviceToHost);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "cudaMemcpy failed!\n");
@@ -111,8 +122,10 @@ Error:
     return cudaStatus;
 }
 
-
-cudaError_t Solve::Internal::testCuda(int* res, const int* arr, const int size)
+///////////////////////////////
+//       TEST FUNCTION       //
+///////////////////////////////
+cudaError_t Solve::Internal::testCudaGlobalMemory(int* res, const int* arr, const int size)
 {
     int* dev_arr = 0;
     int* dev_res = 0;
@@ -150,7 +163,7 @@ cudaError_t Solve::Internal::testCuda(int* res, const int* arr, const int size)
 
 
     const std::chrono::system_clock::time_point startTimeAlloc = std::chrono::system_clock::now();
-    // Allocate GPU buffers for three vectors (two input, one output)    .
+    // Allocate GPU buffers for two arrays (one input, one output)    .
     cudaEventRecord(eAllocStart);
     cudaStatus = cudaMalloc((void**)&dev_res, size * sizeof(int));
     if (cudaStatus != cudaSuccess) {
@@ -168,7 +181,7 @@ cudaError_t Solve::Internal::testCuda(int* res, const int* arr, const int size)
 
 
     const std::chrono::system_clock::time_point startTimeCopy = std::chrono::system_clock::now();
-    // Copy input vectors from host memory to GPU buffers.
+    // Copy input arrays from host memory to GPU buffers.
     cudaEventRecord(eCopyStart);
     cudaStatus = cudaMemcpy(dev_arr, arr, size * size * sizeof(int), cudaMemcpyHostToDevice);
     cudaEventRecord(eCopyStop);
@@ -187,7 +200,7 @@ cudaError_t Solve::Internal::testCuda(int* res, const int* arr, const int size)
 
 
     const std::chrono::system_clock::time_point startTimeCompute = std::chrono::system_clock::now();
-    // Launch a kernel on the GPU with one thread for each element.
+    // Launch a kernel on the GPU with one thread for each column.
     cudaEventRecord(eComputeStart);
     compute <<<num_blocks, resBlockSize >> > (dev_res, dev_arr, resBlockSize);
     cudaEventRecord(eComputeStop);
@@ -208,7 +221,7 @@ cudaError_t Solve::Internal::testCuda(int* res, const int* arr, const int size)
 
 
     const std::chrono::system_clock::time_point startTimeRecive = std::chrono::system_clock::now();
-    // Copy output vector from GPU buffer to host memory.
+    // Copy output array from GPU buffer to host memory.
     cudaEventRecord(eReciveStart);
     cudaStatus = cudaMemcpy(res, dev_res, size * sizeof(int), cudaMemcpyDeviceToHost);
     cudaEventRecord(eReciveStop);

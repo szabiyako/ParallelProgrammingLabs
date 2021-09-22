@@ -78,7 +78,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="Solve\Cuda\solveCuda.cu" />
+    <CudaCompile Include="Solve\Cuda\ConstantMemory\solveCudaConstantMemory.cu" />
+    <CudaCompile Include="Solve\Cuda\GloabalMemory\solveCudaGlobalMemory.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -89,8 +90,9 @@
   <ItemGroup>
     <ClInclude Include="Solve\CpuOpenMP\solveCpuOpenMP.h" />
     <ClInclude Include="Solve\Cpu\solveCpu.h" />
-    <ClInclude Include="Solve\Cuda\solveCuda.cuh" />
+    <ClInclude Include="Solve\Cuda\ConstantMemory\solveCudaConstantMemory.cuh" />
     <ClInclude Include="cudaInclude.h" />
+    <ClInclude Include="Solve\Cuda\GloabalMemory\solveCudaGlobalMemory.cuh" />
     <ClInclude Include="Tools\tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

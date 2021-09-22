@@ -1,8 +1,3 @@
-/*
-* Вариант № 11. Написать программу с использованием технологии CUDA, которая реализует следующие действия:
-* формирует массив,
-* размерностью N x N и формирует новый массив, элементы которого равны количеству нулевых элементов в соответствующем столбце исходного массива.
-*/
 #define NOMINMAX
 
 #include <stdio.h>
@@ -14,7 +9,8 @@
 #include <limits>
 
 #include "Tools/tools.h"
-#include "Solve/Cuda/solveCuda.cuh"
+#include "Solve/Cuda/GloabalMemory/solveCudaGlobalMemory.cuh"
+#include "Solve/Cuda/ConstantMemory/solveCudaConstantMemory.cuh"
 #include "Solve/Cpu/solveCpu.h"
 #include "Solve/CpuOpenMP/solveCpuOpenMP.h"
 
@@ -22,8 +18,6 @@ int main()
 {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-
-    //cudaSetDevice(0);
 
     Tools::setupRandomizer();
     printf("----------\n");
@@ -60,9 +54,8 @@ int main()
         Tools::printMatrix(mat, sideSize);
     }
 
-    Tools::testFunctionCuda(Solve::cuda, Solve::testCuda, "CUDA", res, mat, sideSize, usePrint);
-    //Tools::testFunction(Solve::testCuda, "CUDA TEST", res, mat, sideSize, usePrint);
-    //Tools::testFunction(Solve::cuda, "CUDA", res, mat, sideSize, usePrint);
+    Tools::testFunctionCuda(Solve::cudaGlobalMemory, Solve::testCudaGlobalMemory, "CUDA Global Memory", res, mat, sideSize, usePrint);
+    Tools::testFunctionCuda(Solve::cudaConstantMemory, Solve::testCudaConstantMemory, "CUDA Constant Memory", res, mat, sideSize, usePrint);
     Tools::testFunction(Solve::cpu, "CPU", res, mat, sideSize, usePrint);
     Tools::testFunction(Solve::cpuOpenMP, "CPU OpenMP", res, mat, sideSize, usePrint);
     

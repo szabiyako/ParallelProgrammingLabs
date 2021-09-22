@@ -149,13 +149,14 @@ void Tools::testFunctionCuda(
     //Clear result
     clearArray(result, size);
     function(result, arr, size);
+
     clearArray(result, size);
     const std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
     function(result, arr, size);
     const std::chrono::system_clock::time_point endTime = std::chrono::system_clock::now();
-    printf("--------------\n");
+    printf("----------------------------\n");
     printf(" %s:\n", name);
-    printf("--------------\n");
+    printf("----------------------------\n");
     clearArray(result, size);
     testFunction(result, arr, size);
     if (usePrint)
