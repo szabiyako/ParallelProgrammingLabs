@@ -10,7 +10,7 @@ void testCudaConstantMemory(int* res, const int* matrix, const int sideSize);
 
 namespace Internal {
 
-__global__ void compute(int *res, const int size);
+__global__ void computeConstant(int *res, const int size);
 
 cudaError_t cudaConstantMemory(int* res, const int* arr, const int size);
 

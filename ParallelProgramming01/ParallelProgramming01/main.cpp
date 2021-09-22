@@ -11,8 +11,11 @@
 #include "Tools/tools.h"
 #include "Solve/Cuda/GloabalMemory/solveCudaGlobalMemory.cuh"
 #include "Solve/Cuda/ConstantMemory/solveCudaConstantMemory.cuh"
+#include "Solve/Cuda/SharedMemory/solveCudaSharedMemory.cuh"
 #include "Solve/Cpu/solveCpu.h"
 #include "Solve/CpuOpenMP/solveCpuOpenMP.h"
+
+extern "C" bool isSupportAVX512();
 
 int main()
 {
@@ -23,8 +26,13 @@ int main()
     printf("----------\n");
     printf("GPUs info:\n");
     printf("----------\n");
-    fflush(stdout);
     Tools::printCudaDevicesInfo();
+
+    printf("----------\n");
+    printf("CPU  info:\n");
+    printf("----------\n");
+    printf("Support AVX 512: %s\n", (isSupportAVX512() ? "Yes" : "No"));
+
     printf("\n\n\n");
     printf("Вариант № 11. Написать программу с использованием технологии CUDA, которая реализует следующие действия:\n");
     printf("формирует массив, размерностью N x N и формирует новый массив,\n");
@@ -56,6 +64,7 @@ int main()
 
     Tools::testFunctionCuda(Solve::cudaGlobalMemory, Solve::testCudaGlobalMemory, "CUDA Global Memory", res, mat, sideSize, usePrint);
     Tools::testFunctionCuda(Solve::cudaConstantMemory, Solve::testCudaConstantMemory, "CUDA Constant Memory", res, mat, sideSize, usePrint);
+    Tools::testFunctionCuda(Solve::cudaSharedMemory, Solve::testCudaSharedMemory, "CUDA Shared Memory", res, mat, sideSize, usePrint);
     Tools::testFunction(Solve::cpu, "CPU", res, mat, sideSize, usePrint);
     Tools::testFunction(Solve::cpuOpenMP, "CPU OpenMP", res, mat, sideSize, usePrint);
     

@@ -1,4 +1,4 @@
-#include "solveCudaGlobalMemory.cuh"
+#include "solveCudaSharedMemory.cuh"
 
 #include <stdio.h>
 #include <chrono>
@@ -7,9 +7,9 @@
 //                                                 SOLVER                                                           //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Solve::cudaGlobalMemory(int *res, const int *matrix, const int sideSize)
+void Solve::cudaSharedMemory(int *res, const int *matrix, const int sideSize)
 {
-	cudaError_t cudaStatus = Solve::Internal::cudaGlobalMemory(res, matrix, sideSize);
+	cudaError_t cudaStatus = Solve::Internal::cudaSharedMemory(res, matrix, sideSize);
 	if (cudaStatus != cudaSuccess) {
 		fprintf(stderr, "Solve::cuda failed!\n");
 		fflush(stdout);
@@ -17,9 +17,9 @@ void Solve::cudaGlobalMemory(int *res, const int *matrix, const int sideSize)
 	}
 }
 
-void Solve::testCudaGlobalMemory(int* res, const int* matrix, const int sideSize)
+void Solve::testCudaSharedMemory(int* res, const int* matrix, const int sideSize)
 {
-    cudaError_t cudaStatus = Solve::Internal::testCudaGlobalMemory(res, matrix, sideSize);
+    cudaError_t cudaStatus = Solve::Internal::testCudaSharedMemory(res, matrix, sideSize);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "Solve::cuda failed!\n");
         fflush(stdout);
@@ -30,7 +30,7 @@ void Solve::testCudaGlobalMemory(int* res, const int* matrix, const int sideSize
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                               INTERNAL                                                           //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void Solve::Internal::computeGlobal(int* res, const int* arr, const int size)
+__global__ void Solve::Internal::computeShared(int* res, const int* arr, const int size)
 {
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col < size) {
@@ -46,7 +46,7 @@ __global__ void Solve::Internal::computeGlobal(int* res, const int* arr, const i
 ///////////////////////////////
 //       BASE FUNCTION       //
 ///////////////////////////////
-cudaError_t Solve::Internal::cudaGlobalMemory(int* res, const int* arr, const int size)
+cudaError_t Solve::Internal::cudaSharedMemory(int* res, const int* arr, const int size)
 {
     int* dev_arr = 0;
     int* dev_res = 0;
@@ -92,7 +92,7 @@ cudaError_t Solve::Internal::cudaGlobalMemory(int* res, const int* arr, const in
 
     
     // Launch a kernel on the GPU with one thread for each column.
-    computeGlobal <<<num_blocks, resBlockSize >>> (dev_res, dev_arr, resBlockSize);
+    computeShared <<<num_blocks, resBlockSize >>> (dev_res, dev_arr, resBlockSize);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
     if (cudaStatus != cudaSuccess) {
@@ -125,7 +125,7 @@ Error:
 ///////////////////////////////
 //       TEST FUNCTION       //
 ///////////////////////////////
-cudaError_t Solve::Internal::testCudaGlobalMemory(int* res, const int* arr, const int size)
+cudaError_t Solve::Internal::testCudaSharedMemory(int* res, const int* arr, const int size)
 {
     int* dev_arr = 0;
     int* dev_res = 0;
@@ -202,7 +202,7 @@ cudaError_t Solve::Internal::testCudaGlobalMemory(int* res, const int* arr, cons
     const std::chrono::system_clock::time_point startTimeCompute = std::chrono::system_clock::now();
     // Launch a kernel on the GPU with one thread for each column.
     cudaEventRecord(eComputeStart);
-    computeGlobal <<<num_blocks, resBlockSize >> > (dev_res, dev_arr, resBlockSize);
+    computeShared <<<num_blocks, resBlockSize >> > (dev_res, dev_arr, resBlockSize);
     cudaEventRecord(eComputeStop);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();

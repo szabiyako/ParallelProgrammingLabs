@@ -10,7 +10,7 @@ void testCudaGlobalMemory(int* res, const int* matrix, const int sideSize);
 
 namespace Internal {
 
-__global__ void compute(int *res, const int *arr, const int size);
+__global__ void computeGlobal(int *res, const int *arr, const int size);
 
 cudaError_t cudaGlobalMemory(int* res, const int* arr, const int size);
 

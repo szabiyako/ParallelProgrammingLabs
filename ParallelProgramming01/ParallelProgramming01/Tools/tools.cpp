@@ -148,7 +148,7 @@ void Tools::testFunctionCuda(
 {
     //Clear result
     clearArray(result, size);
-    function(result, arr, size);
+    function(result, arr, size); // First start is taking much longer than others, so just skip it
 
     clearArray(result, size);
     const std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
@@ -158,7 +158,7 @@ void Tools::testFunctionCuda(
     printf(" %s:\n", name);
     printf("----------------------------\n");
     clearArray(result, size);
-    testFunction(result, arr, size);
+    testFunction(result, arr, size); // Prints all steps timings
     if (usePrint)
         printArray(result, size);
     printf("Elapsed time: %d s\n              %d ms\n              %d ns\n",

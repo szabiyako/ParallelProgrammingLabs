@@ -35,7 +35,7 @@ void Solve::testCudaConstantMemory(int* res, const int* matrix, const int sideSi
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                               INTERNAL                                                           //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void Solve::Internal::compute(int* res, const int size)
+__global__ void Solve::Internal::computeConstant(int* res, const int size)
 {
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col < size) {
@@ -96,7 +96,7 @@ cudaError_t Solve::Internal::cudaConstantMemory(int* res, const int* arr, const 
 
     
     // Launch a kernel on the GPU with one thread for each column.
-    compute<<<num_blocks, resBlockSize >>> (dev_res, resBlockSize);
+    computeConstant <<<num_blocks, resBlockSize >>> (dev_res, resBlockSize);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
     if (cudaStatus != cudaSuccess) {
@@ -203,7 +203,7 @@ cudaError_t Solve::Internal::testCudaConstantMemory(int* res, const int* arr, co
     const std::chrono::system_clock::time_point startTimeCompute = std::chrono::system_clock::now();
     // Launch a kernel on the GPU with one thread for each column.
     cudaEventRecord(eComputeStart);
-    compute <<<num_blocks, resBlockSize >> > (dev_res, resBlockSize);
+    computeConstant <<<num_blocks, resBlockSize >> > (dev_res, resBlockSize);
     cudaEventRecord(eComputeStop);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
