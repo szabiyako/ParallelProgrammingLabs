@@ -62,9 +62,10 @@ int main()
         Tools::printMatrix(mat, sideSize);
     }
 
+    Tools::testFunctionCuda(Solve::cudaSharedMemory, Solve::testCudaSharedMemory, "CUDA Shared Memory", res, mat, sideSize, usePrint);
     Tools::testFunctionCuda(Solve::cudaGlobalMemory, Solve::testCudaGlobalMemory, "CUDA Global Memory", res, mat, sideSize, usePrint);
     Tools::testFunctionCuda(Solve::cudaConstantMemory, Solve::testCudaConstantMemory, "CUDA Constant Memory", res, mat, sideSize, usePrint);
-    Tools::testFunctionCuda(Solve::cudaSharedMemory, Solve::testCudaSharedMemory, "CUDA Shared Memory", res, mat, sideSize, usePrint);
+
     Tools::testFunction(Solve::cpu, "CPU", res, mat, sideSize, usePrint);
     Tools::testFunction(Solve::cpuOpenMP, "CPU OpenMP", res, mat, sideSize, usePrint);
     

@@ -74,7 +74,7 @@ void Tools::printArray(int *arr, const int size)
 int Tools::getSizeFromInput()
 {
     int N = -1;
-    while (N <= 0) {
+    while ((N <= 0) || (N > 46340)) {
         while (std::cout << "Enter N = " && !(std::cin >> N)) {
             std::cin.clear(); //clear bad input flag
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //discard input
@@ -82,6 +82,8 @@ int Tools::getSizeFromInput()
         }
         if (N <= 0)
             std::cout << "Invalid input\n";
+        else if (N > 46340)
+            std::cout << "N = " << N << " is greater than maxN = 46340\n";
     }
     return N;
 }

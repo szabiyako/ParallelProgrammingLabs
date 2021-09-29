@@ -32,14 +32,16 @@ void Solve::testCudaGlobalMemory(int* res, const int* matrix, const int sideSize
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void Solve::Internal::computeGlobal(int* res, const int* arr, const int size)
 {
+    int colRes = 0;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col < size) {
         for (int row = 0; row < size; ++row) {
             const int elemIdx = col * size + row;
             if (arr[elemIdx] == 0)
-                ++res[col];
+                ++colRes;
         }
     }
+    res[col] = colRes;
 }
 
 
@@ -284,5 +286,21 @@ Error:
         eFreeTime,
         std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeFree - startTimeFree).count());
     fflush(stdout);
+
+    cudaEventDestroy(eAllocStart);
+    cudaEventDestroy(eAllocStop);
+
+    cudaEventDestroy(eCopyStart);
+    cudaEventDestroy(eCopyStop);
+
+    cudaEventDestroy(eComputeStart);
+    cudaEventDestroy(eComputeStop);
+
+    cudaEventDestroy(eReciveStart);
+    cudaEventDestroy(eReciveStop);
+
+    cudaEventDestroy(eFreeStart);
+    cudaEventDestroy(eFreeStop);
+
     return cudaStatus;
 }

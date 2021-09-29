@@ -32,14 +32,17 @@ void Solve::testCudaSharedMemory(int* res, const int* matrix, const int sideSize
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void Solve::Internal::computeShared(int* res, const int* arr, const int size)
 {
+    extern __shared__ int block[];
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col < size) {
+        block[threadIdx.x] = 0;
         for (int row = 0; row < size; ++row) {
             const int elemIdx = col * size + row;
             if (arr[elemIdx] == 0)
-                ++res[col];
+                ++block[col];
         }
     }
+    res[col] = block[threadIdx.x];
 }
 
 
@@ -92,7 +95,7 @@ cudaError_t Solve::Internal::cudaSharedMemory(int* res, const int* arr, const in
 
     
     // Launch a kernel on the GPU with one thread for each column.
-    computeShared <<<num_blocks, resBlockSize >>> (dev_res, dev_arr, resBlockSize);
+    computeShared <<<num_blocks, resBlockSize, resBlockSize * sizeof(int)>>> (dev_res, dev_arr, resBlockSize);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
     if (cudaStatus != cudaSuccess) {
@@ -202,7 +205,7 @@ cudaError_t Solve::Internal::testCudaSharedMemory(int* res, const int* arr, cons
     const std::chrono::system_clock::time_point startTimeCompute = std::chrono::system_clock::now();
     // Launch a kernel on the GPU with one thread for each column.
     cudaEventRecord(eComputeStart);
-    computeShared <<<num_blocks, resBlockSize >> > (dev_res, dev_arr, resBlockSize);
+    computeShared <<<num_blocks, resBlockSize, resBlockSize * sizeof(int)>>> (dev_res, dev_arr, resBlockSize);
     cudaEventRecord(eComputeStop);
     // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
@@ -284,5 +287,21 @@ Error:
         eFreeTime,
         std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeFree - startTimeFree).count());
     fflush(stdout);
+
+    cudaEventDestroy(eAllocStart);
+    cudaEventDestroy(eAllocStop);
+
+    cudaEventDestroy(eCopyStart);
+    cudaEventDestroy(eCopyStop);
+
+    cudaEventDestroy(eComputeStart);
+    cudaEventDestroy(eComputeStop);
+
+    cudaEventDestroy(eReciveStart);
+    cudaEventDestroy(eReciveStop);
+
+    cudaEventDestroy(eFreeStart);
+    cudaEventDestroy(eFreeStop);
+
     return cudaStatus;
 }

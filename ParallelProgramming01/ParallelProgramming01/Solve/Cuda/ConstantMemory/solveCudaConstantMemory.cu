@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <chrono>
 
-const int maxSideSize = 128;
-const int maxElements = maxSideSize * maxSideSize;
+__device__ const int maxSideSize = 128;
+__device__ const int maxElements = maxSideSize * maxSideSize;
 
 __constant__ int dev_arr[maxElements];
 
@@ -37,14 +37,16 @@ void Solve::testCudaConstantMemory(int* res, const int* matrix, const int sideSi
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 __global__ void Solve::Internal::computeConstant(int* res, const int size)
 {
+    int colRes = 0;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col < size) {
         for (int row = 0; row < size; ++row) {
             const int elemIdx = col * size + row;
             if (dev_arr[elemIdx] == 0)
-                ++res[col];
+                ++colRes;
         }
     }
+    res[col] = colRes;
 }
 
 
@@ -56,7 +58,7 @@ cudaError_t Solve::Internal::cudaConstantMemory(int* res, const int* arr, const 
     int* dev_res = 0;
     cudaError_t cudaStatus;
 
-    if (size >= maxSideSize) {
+    if (size > maxSideSize) {
         //printf("Constant memory overflow, max size is %d, but received %d\n", maxSideSize - 1, size);
         //fflush(stdout);
         return cudaError::cudaSuccess;
@@ -81,7 +83,7 @@ cudaError_t Solve::Internal::cudaConstantMemory(int* res, const int* arr, const 
    
     
     // Copy input array from host memory to GPU buffers.
-    cudaStatus = cudaMemcpyToSymbol(dev_arr, arr, size * size * sizeof(int), cudaMemcpyHostToDevice);
+    cudaStatus = cudaMemcpyToSymbol(dev_arr, arr, size * size * sizeof(int), 0, cudaMemcpyHostToDevice);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "cudaMemcpyToSymbol failed!\n");
         goto Error;
@@ -133,7 +135,7 @@ cudaError_t Solve::Internal::testCudaConstantMemory(int* res, const int* arr, co
     int* dev_res = 0;
     cudaError_t cudaStatus;
 
-    if (size >= maxSideSize) {
+    if (size > maxSideSize) {
         printf("Constant memory overflow, max size is %d, but received %d\n", maxSideSize - 1, size);
         fflush(stdout);
         return cudaError::cudaErrorAssert;
@@ -184,7 +186,7 @@ cudaError_t Solve::Internal::testCudaConstantMemory(int* res, const int* arr, co
     const std::chrono::system_clock::time_point startTimeCopy = std::chrono::system_clock::now();
     // Copy input arrays from host memory to GPU buffers.
     cudaEventRecord(eCopyStart);
-    cudaStatus = cudaMemcpyToSymbol(dev_arr, arr, size * size * sizeof(int), cudaMemcpyHostToDevice);
+    cudaStatus = cudaMemcpyToSymbol(dev_arr, arr, size * size * sizeof(int), 0, cudaMemcpyHostToDevice);
     cudaEventRecord(eCopyStop);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "cudaMemcpyToSymbol failed!\n");
@@ -284,5 +286,21 @@ Error:
         eFreeTime,
         std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeFree - startTimeFree).count());
     fflush(stdout);
+
+    cudaEventDestroy(eAllocStart);
+    cudaEventDestroy(eAllocStop);
+
+    cudaEventDestroy(eCopyStart);
+    cudaEventDestroy(eCopyStop);
+
+    cudaEventDestroy(eComputeStart);
+    cudaEventDestroy(eComputeStop);
+
+    cudaEventDestroy(eReciveStart);
+    cudaEventDestroy(eReciveStop);
+
+    cudaEventDestroy(eFreeStart);
+    cudaEventDestroy(eFreeStop);
+
     return cudaStatus;
 }
