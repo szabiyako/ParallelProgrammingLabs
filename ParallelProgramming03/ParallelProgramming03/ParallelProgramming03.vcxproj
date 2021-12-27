@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E3C93B26-A469-4D63-84CA-16CB8E331250}</ProjectGuid>
-    <RootNamespace>ParallelProgramming01</RootNamespace>
+    <RootNamespace>ParallelProgramming03</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -48,12 +48,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalOptions>-openmp:llvm -openmp:experimental %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>536870912</StackReserveSize>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
@@ -66,7 +68,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalOptions>-openmp:llvm -openmp:experimental %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -74,35 +77,33 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>536870912</StackReserveSize>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="Solve\Cuda\ConstantMemory\solveCudaConstantMemory.cu" />
-    <CudaCompile Include="Solve\Cuda\GloabalMemory\solveCudaGlobalMemory.cu" />
-    <CudaCompile Include="Solve\Cuda\SharedMemory\solveCudaSharedMemory.cu" />
-  </ItemGroup>
-  <ItemGroup>
+    <CudaCompile Include="Sort\Gpu\gpu.cu">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
+    <ClCompile Include="Tools\InstructionSet\InstructionSet.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Solve\CpuOpenMP\solveCpuOpenMP.cpp" />
-    <ClCompile Include="Solve\Cpu\solveCpu.cpp" />
+    <ClCompile Include="Sort\Cpu\cpu.cpp" />
+    <ClCompile Include="Tools\Timer\timer.cpp" />
     <ClCompile Include="Tools\tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Solve\CpuOpenMP\solveCpuOpenMP.h" />
-    <ClInclude Include="Solve\Cpu\solveCpu.h" />
-    <ClInclude Include="Solve\Cuda\ConstantMemory\solveCudaConstantMemory.cuh" />
-    <ClInclude Include="cudaInclude.h" />
-    <ClInclude Include="Solve\Cuda\GloabalMemory\solveCudaGlobalMemory.cuh" />
-    <ClInclude Include="Solve\Cuda\SharedMemory\solveCudaSharedMemory.cuh" />
+    <CudaCompile Include="Sort\Gpu\gpu.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
+    <ClInclude Include="Tools\InstructionSet\InstructionSet.h" />
+    <ClInclude Include="Sort\Cpu\cpu.h" />
+    <ClInclude Include="Tools\Timer\timer.h" />
     <ClInclude Include="Tools\tools.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="avxCheck.asm">
-      <FileType>Document</FileType>
-    </MASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

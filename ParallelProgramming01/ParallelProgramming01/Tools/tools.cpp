@@ -5,6 +5,8 @@
 #include <ctime>
 #include <chrono>
 
+#include "omp.h"
+
 #include "../cudaInclude.h"
 
 using namespace Tools;
@@ -73,8 +75,9 @@ void Tools::printArray(int *arr, const int size)
 
 int Tools::getSizeFromInput()
 {
+    const int maxN = 46340;
     int N = -1;
-    while ((N <= 0) || (N > 46340)) {
+    while ((N <= 0) || (N > maxN)) {
         while (std::cout << "Enter N = " && !(std::cin >> N)) {
             std::cin.clear(); //clear bad input flag
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //discard input
@@ -82,16 +85,21 @@ int Tools::getSizeFromInput()
         }
         if (N <= 0)
             std::cout << "Invalid input\n";
-        else if (N > 46340)
-            std::cout << "N = " << N << " is greater than maxN = 46340\n";
+        else if (N > maxN)
+            std::cout << "N = " << N << " is greater than maxN = " << maxN << "\n";
     }
     return N;
 }
 
 void Tools::fillArrayRandom(int *arr, const int size, const int minValue, const int maxValue)
-{
-    for (int i = 0; i < size; ++i) {
-        arr[i] = getRandomInt(minValue, maxValue);
+{ 
+    #pragma omp parallel
+    {
+        srand(int(time(NULL)) ^ omp_get_thread_num());
+        #pragma omp for
+        for (int i = 0; i < size; ++i) {
+            arr[i] = getRandomInt(minValue, maxValue);
+        }
     }
 }
 
@@ -104,7 +112,7 @@ void Tools::clearArray(int *arr, const int size)
 
 void Tools::setupRandomizer()
 {
-    srand(time(0));
+    srand(int(time(NULL)));
 }
 
 int Tools::getRandomInt(const int min, const int max)

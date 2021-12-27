@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E3C93B26-A469-4D63-84CA-16CB8E331250}</ProjectGuid>
-    <RootNamespace>ParallelProgramming01</RootNamespace>
+    <RootNamespace>ParallelProgramming02</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -80,29 +80,17 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="Solve\Cuda\ConstantMemory\solveCudaConstantMemory.cu" />
-    <CudaCompile Include="Solve\Cuda\GloabalMemory\solveCudaGlobalMemory.cu" />
-    <CudaCompile Include="Solve\Cuda\SharedMemory\solveCudaSharedMemory.cu" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="Tools\InstructionSet\InstructionSet.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Solve\CpuOpenMP\solveCpuOpenMP.cpp" />
     <ClCompile Include="Solve\Cpu\solveCpu.cpp" />
     <ClCompile Include="Tools\tools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tools\InstructionSet\InstructionSet.h" />
     <ClInclude Include="Solve\CpuOpenMP\solveCpuOpenMP.h" />
     <ClInclude Include="Solve\Cpu\solveCpu.h" />
-    <ClInclude Include="Solve\Cuda\ConstantMemory\solveCudaConstantMemory.cuh" />
-    <ClInclude Include="cudaInclude.h" />
-    <ClInclude Include="Solve\Cuda\GloabalMemory\solveCudaGlobalMemory.cuh" />
-    <ClInclude Include="Solve\Cuda\SharedMemory\solveCudaSharedMemory.cuh" />
     <ClInclude Include="Tools\tools.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="avxCheck.asm">
-      <FileType>Document</FileType>
-    </MASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
