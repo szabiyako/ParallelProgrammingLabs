@@ -24,7 +24,7 @@ static int partition(int64_t *const arr, int64_t low, int64_t high)
 }
 
 
-void quickSort(int64_t *const arr, int64_t low, int64_t high)
+static void quickSort(int64_t *const arr, int64_t low, int64_t high)
 {
     if (low < high)
     {

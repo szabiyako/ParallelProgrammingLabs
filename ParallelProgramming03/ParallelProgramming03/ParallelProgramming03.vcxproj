@@ -84,11 +84,6 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="Sort\Gpu\gpu.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CudaCompile>
     <ClCompile Include="Tools\InstructionSet\InstructionSet.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Sort\Cpu\cpu.cpp" />
@@ -96,14 +91,14 @@
     <ClCompile Include="Tools\tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Sort\Gpu\gpu.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CudaCompile>
+    <ClInclude Include="Sort\Gpu\gpu.cuh" />
     <ClInclude Include="Tools\InstructionSet\InstructionSet.h" />
     <ClInclude Include="Sort\Cpu\cpu.h" />
     <ClInclude Include="Tools\Timer\timer.h" />
     <ClInclude Include="Tools\tools.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Sort\Gpu\gpu.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     Tools::fillArrayRandom(initArray, size, -100, 100);
 
     //First run
-    Sort::cuda(array, 3);
+    //Sort::cuda(array, 3);
 
     printf("Start tests...\n");
     fflush(stdout);
@@ -73,10 +73,9 @@ int main(int argc, char* argv[])
         Tools::printArray(initArray, size);
     }
 
-    Tools::testFunctionVerbose(Sort::multiThread, "CPU OpenMP", array, initArray, size, usePrint, nIterations, true);
-    Tools::testFunctionVerbose(Sort::singleThread, "CPU", array, initArray, size, usePrint, nIterations, false);
-    Tools::testFunctionVerbose(Sort::cudaSingle, "CUDA smart", array, initArray, size, usePrint, nIterations, false);
-    Tools::testFunctionVerbose(Sort::cuda, "CUDA single", array, initArray, size, usePrint, nIterations, false);
+    Tools::testFunctionVerbose(Sort::multiThread, "CPU OpenMP", array, initArray, size, usePrint, nIterations);
+    Tools::testFunctionVerbose(Sort::singleThread, "CPU", array, initArray, size, usePrint, nIterations);
+    Tools::testFunctionVerbose(Sort::cudaSingle, "CUDA single", array, initArray, size, usePrint, nIterations);
     
     // There is no way to use AVX256 in this case
     // So maby next time

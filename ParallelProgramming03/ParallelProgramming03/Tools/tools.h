@@ -25,8 +25,7 @@ void testFunctionVerbose(
     int64_t *const initArr,
     const int64_t size,
     const bool usePrint,
-    const int64_t iterations,
-    bool useTimers);
+    const int64_t iterations);
 
 void testFunction(
     void (*function)(int64_t *const, const int64_t),
@@ -36,8 +35,7 @@ void testFunction(
     const int64_t iterations,
     size_t& avgTime,
     size_t& maxTime,
-    size_t& minTime,
-    bool useTimers);
+    size_t& minTime);
 
 std::string getConvertedTime(const size_t timeInNs = 0);
 std::string getMemoryAsString(const size_t bytes);

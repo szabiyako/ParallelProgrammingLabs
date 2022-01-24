@@ -9,7 +9,6 @@
 namespace Sort {
 
 void cudaSingle(int64_t *const arr, const int64_t size);
-void cuda(int64_t *const arr, const int64_t size);
 
 }
 

@@ -186,8 +186,7 @@ void Tools::testFunctionVerbose(
     int64_t *const initArr,
     const int64_t size,
     const bool usePrint,
-    const int64_t iterations,
-    bool useTimers)
+    const int64_t iterations)
 {
     //Clear result
     clearArray(result, size);
@@ -204,8 +203,7 @@ void Tools::testFunctionVerbose(
         iterations,
         avgTimeNs,
         maxTimeNs,
-        minTimeNs,
-        useTimers);
+        minTimeNs);
     printf("--------------\n");
     printf(" %s:\n", name);
     printf("--------------\n");
@@ -225,8 +223,7 @@ void Tools::testFunction(
     const int64_t iterations,
     size_t& avgTime,
     size_t& maxTime,
-    size_t& minTime,
-    bool useTimers)
+    size_t& minTime)
 {
     size_t minTimeNs = std::numeric_limits<size_t>::max();
     size_t maxTimeNs = std::numeric_limits<size_t>::min();
@@ -295,87 +292,3 @@ std::string Tools::getMemoryAsString(const size_t bytes)
         return floatToString(kbytes) + " KiB";
     return std::to_string(bytes) + " B";
 }
-
-/*
-#include "../Solve/Cpu/solveCpu.h"
-#include "../Solve/CpuOpenMP/solveCpuOpenMP.h"
-
-void Tools::cmdMode(int argc, char* argv[])
-{
-    if (argc != 2)
-        exit(-1);
-
-    enum Type : int
-    {
-        CPU,
-        STATIC,
-        DYNAMIC,
-        GUIDED
-    };
-
-    const std::string maxSideStr = argv[1];
-   
-    int64_t maxSide = 0;
-
-    try {
-        maxSide = std::stoll(maxSideStr);
-    }
-    catch (...) {
-        exit(-1);
-    }
-
-    int64_t* res = nullptr;
-    char* mat = nullptr;
-    try {
-        res = new int64_t[maxSide];
-        mat = new char[maxSide * maxSide];
-    }
-    catch (...)
-    {
-        exit(-1);
-    }
-
-    ////////////////////////////////////////////////////
-
-    size_t avgTime = 0.f;
-    size_t minTime = 0.f;
-    size_t maxTime = 0.f;
-
-    Tools::fillArrayRandom(mat, maxSide * maxSide, -2, 2);
-
-    while (true) {
-        int type = 0;
-        std::cin >> type;
-        if ((type < 0) || (type > 3))
-            exit(0);
-
-        int64_t inputSideSize;
-        int64_t inputIterations;
-        std::cin >> inputSideSize >> inputIterations;
-
-        const int64_t sideSize = inputSideSize;
-        const int64_t nIterations = inputIterations;
-        const int64_t nElements = sideSize * sideSize;
-
-        if (type == CPU)
-            Tools::testFunction(Solve::cpu, res, mat, sideSize, nIterations, avgTime, maxTime, minTime);
-        else if (type == STATIC)
-            Tools::testFunction(Solve::cpuOpenMpStatic, res, mat, sideSize, nIterations, avgTime, maxTime, minTime);
-        else if (type == DYNAMIC)
-            Tools::testFunction(Solve::cpuOpenMpDynamic, res, mat, sideSize, nIterations, avgTime, maxTime, minTime);
-        else if (type == GUIDED)
-            Tools::testFunction(Solve::cpuOpenMpGuided, res, mat, sideSize, nIterations, avgTime, maxTime, minTime);
-        else
-            exit(-1);
-
-        std::cout << avgTime << " " << maxTime << " " << minTime;
-    }
-
-    
-
-    delete[] res;
-    delete[] mat;
-
-    exit(0);
-}
-*/
